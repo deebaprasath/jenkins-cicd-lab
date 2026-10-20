@@ -22,7 +22,17 @@ pipeline {
                     set -eu
                     test -f index.html
                     test -f Dockerfile
+                    test -f test.sh
                     echo "Source files validated"
+                '''
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh '''
+                    chmod +x test.sh
+                    ./test.sh
                 '''
             }
         }
