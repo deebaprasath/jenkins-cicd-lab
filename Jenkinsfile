@@ -5,7 +5,9 @@ pipeline {
     environment {
         IMAGE_NAME = 'my_app-pipeline'
         CONTAINER_NAME = 'my_app_pipeline'
+        TEST_CONTAINER = 'my_app_test'
         APP_PORT = '8014'
+        TEST_PORT = '8015'
     }
 
     stages {
@@ -46,29 +48,64 @@ pipeline {
             }
         }
 
-        stage('Deploy Container') {
+        stage('Test New Container') {
             steps {
                 sh '''
+                    set -eu
+
+                    docker rm -f ${TEST_CONTAINER} 2>/dev/null || true
+
+                    docker run -d \
+                      --name ${TEST_CONTAINER} \
+                      -p ${TEST_PORT}:80 \
+                      ${IMAGE_NAME}:${BUILD_NUMBER}
+
+                    sleep 3
+
+                    if ! curl -fsS \
+                      http://localhost:${TEST_PORT}/ \
+                      -o /tmp/jenkins-test.html; then
+                        docker logs ${TEST_CONTAINER}
+                        exit 1
+                    fi
+
+                    grep -q "The commands you keep forgetting" \
+                      /tmp/jenkins-test.html
+
+                    echo "New container passed HTTP and content tests"
+                '''
+            }
+        }
+
+        stage('Deploy Production') {
+            steps {
+                sh '''
+                    set -eu
+
                     docker rm -f ${CONTAINER_NAME} 2>/dev/null || true
 
                     docker run -d \
                       --name ${CONTAINER_NAME} \
                       -p ${APP_PORT}:80 \
                       ${IMAGE_NAME}:${BUILD_NUMBER}
+
+                    sleep 3
+
+                    curl -fsS \
+                      http://localhost:${APP_PORT}/ \
+                      -o /dev/null
+
+                    echo "Production deployment successful"
                 '''
             }
         }
+    }
 
-        stage('Verify Website') {
-            steps {
-                sh '''
-                    set -eu
-                    sleep 2
-                    curl -fsS -o /dev/null \
-                      http://localhost:${APP_PORT}/
-                    echo "Website verification successful"
-                '''
-            }
+    post {
+        always {
+            sh '''
+                docker rm -f ${TEST_CONTAINER} 2>/dev/null || true
+            '''
         }
     }
 }
