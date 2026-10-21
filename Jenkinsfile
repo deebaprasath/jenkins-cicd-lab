@@ -77,29 +77,77 @@ pipeline {
             }
         }
 
+
+
+
+
         stage('Deploy Production') {
             steps {
                 sh '''
                     set -eu
 
-                    docker rm -f ${CONTAINER_NAME} 2>/dev/null || true
+                    OLD_CONTAINER="${CONTAINER_NAME}_previous"
+                    OLD_MOVED=0
 
+                    rollback() {
+                        rc=$?
+
+                        if [ "$rc" -ne 0 ] && [ "$OLD_MOVED" -eq 1 ]; then
+                            echo "Deployment failed. Restoring previous container..."
+
+                            docker rm -f "${CONTAINER_NAME}" 2>/dev/null || true
+                            docker rename "${OLD_CONTAINER}" "${CONTAINER_NAME}" || true
+                            docker start "${CONTAINER_NAME}" || true
+                            sleep 2
+                            curl -fsS "http://localhost:${APP_PORT}/" -o /dev/null \
+                                || echo "WARNING: Check previous container health"
+                        fi
+                    }
+
+                    trap rollback EXIT
+
+                    # Remove a backup left by an earlier successful deployment.
+                    docker rm -f "${OLD_CONTAINER}" 2>/dev/null || true
+
+                    # Preserve the current production container.
+                    if docker inspect "${CONTAINER_NAME}" >/dev/null 2>&1; then
+                        docker stop "${CONTAINER_NAME}"
+                        docker rename "${CONTAINER_NAME}" "${OLD_CONTAINER}"
+                        OLD_MOVED=1
+                    fi
+
+                    # Start the new version.
                     docker run -d \
-                      --name ${CONTAINER_NAME} \
-                      -p ${APP_PORT}:80 \
-                      ${IMAGE_NAME}:${BUILD_NUMBER}
+                        --name "${CONTAINER_NAME}" \
+                        -p "${APP_PORT}:80" \
+                        "${IMAGE_NAME}:${BUILD_NUMBER}"
 
                     sleep 3
 
-                    curl -fsS \
-                      http://localhost:${APP_PORT}/ \
-                      -o /dev/null
+                    # Verify HTTP and the expected page content.
+                    curl -fsS "http://localhost:${APP_PORT}/" \
+                        -o /tmp/jenkins-production.html
 
-                    echo "Production deployment successful"
+                    grep -q "The commands you keep forgetting" \
+                        /tmp/jenkins-production.html
+
+                    echo "Production deployment and content checks passed"
+
+                    # Disable rollback only after successful verification.
+                    trap - EXIT
+
+                    # Keep the new deployment; remove the previous container.
+                    docker rm -f "${OLD_CONTAINER}" 2>/dev/null || true
                 '''
             }
         }
-    }
+
+
+
+
+
+
+
 
     post {
         always {
