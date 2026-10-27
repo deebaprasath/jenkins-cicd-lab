@@ -1,192 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>   Cheat sheet: Linux, Git, Docker</title>
-<p>Deployed automatically using Jenkins CI/CD !</p>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DevOps Pipeline Simulator</title>
 <style>
-  :root {
-    --bg: #edf1f5;
-    --panel: #ffffff;
-    --ink: #12203a;
-    --muted: #55637a;
-    --line: #c9d3df;
-    --accent: #1f5eff;
-    --accent-soft: #e3ebff;
-    --sans: "Space Grotesk", system-ui, sans-serif;
-    --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--sans);
-    line-height: 1.55;
-  }
-  .wrap { max-width: 860px; margin: 0 auto; padding: 0 20px; }
-  header { padding: 20px 0; border-bottom: 1px solid var(--line); }
-  header .wrap { display: flex; justify-content: space-between; align-items: center; }
-  .logo { font-weight: 700; font-size: 1.1rem; }
-  nav a { color: var(--muted); text-decoration: none; margin-left: 20px; }
-  nav a:hover, nav a:focus-visible { color: var(--accent); }
-
-  .hero { padding: 64px 0 36px; }
-  h1 {
-    font-size: clamp(2.2rem, 6vw, 3.6rem);
-    line-height: 1.05;
-    margin: 0 0 16px;
-    letter-spacing: -0.02em;
-    max-width: 14em;
-  }
-  .hero p { color: var(--muted); font-size: 1.1rem; max-width: 34em; margin: 0; }
-
-  .sheet {
-    background: var(--panel);
-    border: 2px solid var(--ink);
-    border-radius: 10px;
-    margin: 20px 0 64px;
-    overflow: hidden;
-  }
-  .tabs { display: flex; border-bottom: 2px solid var(--ink); background: var(--accent-soft); }
-  .tabs button {
-    font: 500 1rem var(--sans);
-    padding: 12px 22px;
-    border: 0;
-    background: transparent;
-    color: var(--ink);
-    cursor: pointer;
-    border-right: 1px solid var(--line);
-  }
-  .tabs button[aria-selected="true"] { background: var(--ink); color: #fff; }
-  .tabs button:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
-
-  ul { list-style: none; margin: 0; padding: 0; }
-  li { border-bottom: 1px solid var(--line); }
-  li:last-child { border-bottom: 0; }
-  li button {
-    display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-    gap: 16px;
-    width: 100%;
-    text-align: left;
-    background: none;
-    border: 0;
-    padding: 14px 20px;
-    cursor: pointer;
-    color: inherit;
-    font: inherit;
-  }
-  li button:hover { background: var(--accent-soft); }
-  li button:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
-  code { font-family: var(--mono); font-size: 0.92rem; overflow-wrap: anywhere; }
-  .desc { color: var(--muted); }
-  .hint { padding: 10px 20px; font-size: 0.9rem; color: var(--muted); border-top: 2px solid var(--ink); background: var(--bg); }
-  .hint b { color: var(--accent); font-weight: 500; }
-
-  footer { border-top: 1px solid var(--line); padding: 24px 0 40px; color: var(--muted); font-size: 0.95rem; }
-
-  @media (max-width: 600px) {
-    li button { grid-template-columns: 1fr; gap: 2px; }
-    nav a { margin-left: 14px; }
-  }
+:root{--bg:#f3f5f2;--panel:#fff;--ink:#16201b;--mute:#5d6b63;--line:#d5dcd6;--acc:#0f766e;--run:#c2410c;--ok:#15803d;--bad:#b91c1c;--term:#0e1512;--termink:#b7f0cf;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c120f;--panel:#141d18;--ink:#e6efe9;--mute:#97a79d;--line:#27352d;--acc:#2dd4bf;--run:#fb923c;--ok:#4ade80;--bad:#f87171;--term:#070b09}}
+:root[data-theme="dark"]{--bg:#0c120f;--panel:#141d18;--ink:#e6efe9;--mute:#97a79d;--line:#27352d;--acc:#2dd4bf;--run:#fb923c;--ok:#4ade80;--bad:#f87171;--term:#070b09}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "IBM Plex Sans",system-ui,sans-serif}
+main{max-width:1080px;margin:0 auto;padding:24px 16px 48px}
+h1{font:700 clamp(26px,5vw,40px)/1.15 "IBM Plex Sans",system-ui,sans-serif;margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:var(--mute);margin:0 0 22px;max-width:62ch}
+.ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:end;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:18px}
+.ctl label{display:flex;flex-direction:column;font-size:13px;color:var(--mute);gap:4px;flex:1;min-width:200px}
+input[type=text]{font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+.chk{flex-direction:row!important;align-items:center;gap:8px!important;flex:0 0 auto!important;min-width:0!important;padding-bottom:9px}
+button{font:600 14px inherit;font-family:inherit;padding:10px 16px;border-radius:6px;border:1px solid var(--acc);background:var(--acc);color:#fff;cursor:pointer}
+:root[data-theme="dark"] button.p,@media (prefers-color-scheme:dark){}
+button.s{background:transparent;color:var(--acc)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:3px solid var(--run);outline-offset:2px}
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-bottom:18px;align-items:stretch}
+.node{background:var(--panel);border:2px solid var(--line);border-radius:10px;padding:12px 10px;text-align:center;position:relative;transition:border-color .25s,box-shadow .25s}
+.node b{display:block;font-size:15px}
+.node small{color:var(--mute);font-size:12px;display:block;margin-top:2px}
+.node .ic{font-size:26px;display:block;margin-bottom:2px}
+.node.on{border-color:var(--run);box-shadow:0 0 0 4px color-mix(in srgb,var(--run) 22%,transparent)}
+.node.done{border-color:var(--ok)}
+.node.fail{border-color:var(--bad)}
+.node:not(:last-child)::after{content:"";position:absolute;right:-18px;top:50%;width:18px;height:3px;background:var(--line);z-index:1;transition:background .25s}
+.node.link::after{background:var(--run)}
+.node.linkdone::after{background:var(--ok)}
+.node .st{font-size:12px;margin-top:6px;min-height:18px;font-weight:600}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.card h2{font-size:16px;margin:0 0 8px}
+#explain{min-height:84px}
+#explain p{margin:0 0 6px}
+#explain code{background:var(--bg);padding:1px 6px;border-radius:4px;font-size:13px}
+.steps{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
+.steps li{font-size:12px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);color:var(--mute)}
+.steps li.on{border-color:var(--run);color:var(--run);font-weight:600}
+.steps li.done{border-color:var(--ok);color:var(--ok)}
+.steps li.fail{border-color:var(--bad);color:var(--bad)}
+#term{background:var(--term);color:var(--termink);font:13px/1.55 "IBM Plex Mono",ui-monospace,Menlo,monospace;border-radius:8px;padding:12px;height:260px;overflow:auto;white-space:pre-wrap}
+#term .c{color:#7dd3fc}#term .e{color:#fca5a5}#term .g{color:#86efac}#term .d{color:#8aa196}
+.site{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.bar{background:var(--bg);padding:6px 10px;font-size:12px;color:var(--mute);border-bottom:1px solid var(--line)}
+.page{padding:18px;min-height:120px}
+.page h3{margin:0 0 4px;font-size:22px}
+.tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:99px;background:var(--acc);color:#fff;margin-top:6px}
+.meta{font-size:13px;color:var(--mute);margin-top:10px}
+@media(max-width:760px){
+.flow{grid-template-columns:1fr;gap:18px}
+.node:not(:last-child)::after{right:50%;top:auto;bottom:-18px;width:3px;height:18px}
+.cols{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <span class="logo">cmd/sheet</span>
-    <nav><a href="#sheet">Commands</a><a href="#about">About</a></nav>
-  </div>
-</header>
+<main>
+<h1>DevOps pipeline simulator</h1>
+<p class="sub">Watch one code change travel from your laptop through Git, GitHub, Jenkins and Docker to a live server on AWS EC2. Change the commit message, then run the pipeline.</p>
 
-<main class="wrap">
-  <section class="hero">
-    <h1>The commands you keep forgetting, one click from your clipboard.</h1>
-    <p>Pick a tool, click any command to copy it. Short, tested, no scrolling through manuals.</p>
-  </section>
+<div class="ctl">
+<label>Commit message
+<input type="text" id="msg" value="Add dark mode to homepage" maxlength="60"></label>
+<label class="chk"><input type="checkbox" id="fail"> Make the tests fail</label>
+<button id="run">Run pipeline</button>
+<button class="s" id="next">Next step</button>
+<button class="s" id="reset">Reset</button>
+</div>
 
-  <section class="sheet" id="sheet" aria-label="Command cheat sheet">
-    <div class="tabs" role="tablist"></div>
-    <ul id="list"></ul>
-    <div class="hint" id="hint" role="status">Click a command to copy it.</div>
-  </section>
+<section class="flow" id="flow" aria-label="Pipeline stages">
+<div class="node"><span class="ic">💻</span><b>Git</b><small>Your laptop</small><div class="st"></div></div>
+<div class="node"><span class="ic">🐙</span><b>GitHub</b><small>Remote repository</small><div class="st"></div></div>
+<div class="node"><span class="ic">🛠️</span><b>Jenkins</b><small>Build server</small><div class="st"></div></div>
+<div class="node"><span class="ic">🐳</span><b>Docker</b><small>Image registry</small><div class="st"></div></div>
+<div class="node"><span class="ic">☁️</span><b>EC2</b><small>Production server</small><div class="st"></div></div>
+</section>
+
+<div class="cols">
+<div>
+<div class="card" id="explain"><h2>What’s happening</h2><div id="ex"><p>Press <b>Run pipeline</b> to play everything, or <b>Next step</b> to go one stage at a time.</p></div>
+<ul class="steps" id="steps"></ul></div>
+<div class="card" style="margin-top:16px"><h2>Live site on EC2</h2>
+<div class="site"><div class="bar">http://ec2-54-210-0-12.compute-1.amazonaws.com</div>
+<div class="page"><h3 id="sv">My App v1.0</h3><div id="sm">Initial release</div><span class="tag" id="stag">Running</span>
+<div class="meta" id="smeta">Container: myapp:1.0 · 1 running</div></div></div></div>
+</div>
+<div class="card"><h2>Terminal output</h2><div id="term" role="log" aria-live="polite"></div></div>
+</div>
 </main>
-
-<footer id="about">
-  <div class="wrap">A small starter site. Add more tools by editing the <code>data</code> object in the script.</div>
-</footer>
-
 <script>
-  const data = {
-    Linux: [
-      ["ls -lah", "List files with sizes and hidden files"],
-      ["chmod +x script.sh", "Make a file executable"],
-      ["grep -rn \"text\" .", "Search for text in all files"],
-      ["ps aux | grep nginx", "Find a running process"],
-      ["df -h", "Check disk space"],
-      ["tail -f /var/log/syslog", "Follow a log file live"]
-    ],
-    Git: [
-      ["git status -sb", "Short view of your changes"],
-      ["git switch -c feature/name", "Create and switch to a branch"],
-      ["git commit -am \"message\"", "Commit all tracked changes"],
-      ["git pull --rebase", "Update without a merge commit"],
-      ["git stash push -m \"wip\"", "Shelve changes for later"],
-      ["git log --oneline --graph", "Compact branch history"]
-    ],
-    Docker: [
-      ["docker ps -a", "List all containers"],
-      ["docker build -t app:1 .", "Build an image from a Dockerfile"],
-      ["docker run -d -p 8080:80 nginx", "Run a container in the background"],
-      ["docker logs -f container", "Follow container logs"],
-      ["docker exec -it container sh", "Open a shell inside a container"],
-      ["docker system prune", "Remove unused data"]
-    ]
-  };
-
-  const tabs = document.querySelector(".tabs");
-  const list = document.getElementById("list");
-  const hint = document.getElementById("hint");
-
-  function show(name) {
-    tabs.querySelectorAll("button").forEach(b =>
-      b.setAttribute("aria-selected", b.textContent === name));
-    list.innerHTML = "";
-    data[name].forEach(([cmd, desc]) => {
-      const li = document.createElement("li");
-      const btn = document.createElement("button");
-      btn.innerHTML = "<code></code><span class='desc'></span>";
-      btn.querySelector("code").textContent = cmd;
-      btn.querySelector(".desc").textContent = desc;
-      btn.addEventListener("click", () => copy(cmd));
-      li.appendChild(btn);
-      list.appendChild(li);
-    });
-    hint.textContent = "Click a command to copy it.";
-  }
-
-  async function copy(cmd) {
-    try {
-      await navigator.clipboard.writeText(cmd);
-      hint.innerHTML = "Copied: <b></b>";
-      hint.querySelector("b").textContent = cmd;
-    } catch (e) {
-      hint.textContent = "Copy failed. Select the command and copy it manually.";
-    }
-  }
-
-  Object.keys(data).forEach(name => {
-    const b = document.createElement("button");
-    b.textContent = name;
-    b.setAttribute("role", "tab");
-    b.addEventListener("click", () => show(name));
-    tabs.appendChild(b);
-  });
-  show("Linux");
+(function(){
+var $=function(i){return document.getElementById(i)};
+var nodes=[].slice.call(document.querySelectorAll('.node'));
+var term=$('term'),ex=$('ex');
+var STEPS=[
+{n:'Commit',a:0,t:'Git saves a snapshot',d:'<p><code>git commit</code> records your change as a snapshot in your <b>local</b> repository. Nothing has left your laptop yet.</p>',st:'Committing…'},
+{n:'Push',a:0,b:1,t:'Git pushes to GitHub',d:'<p><code>git push</code> uploads your commits to <b>GitHub</b>, the shared remote repository your whole team works from.</p>',st:'Pushing…'},
+{n:'Webhook',a:1,b:2,t:'GitHub notifies Jenkins',d:'<p>GitHub sends a <b>webhook</b> (an HTTP POST) to Jenkins the moment new code arrives. This is the trigger for CI/CD.</p>',st:'Triggering…'},
+{n:'Build & test',a:2,t:'Jenkins builds and tests',d:'<p>Jenkins clones the repo, installs dependencies, builds the app and runs the tests. If any test fails, the pipeline stops here.</p>',st:'Testing…'},
+{n:'Docker image',a:2,b:3,t:'Jenkins packages a Docker image',d:'<p>The app and everything it needs are packed into a <b>Docker image</b>, then pushed to a registry so any server can pull it.</p>',st:'Pushing image…'},
+{n:'Deploy',a:3,b:4,t:'EC2 pulls the image',d:'<p>Jenkins connects to the <b>EC2</b> instance over SSH. EC2 pulls the new image from the registry.</p>',st:'Pulling…'},
+{n:'Live',a:4,t:'Container goes live',d:'<p>The old container stops, a new one starts from the new image, and a health check confirms the site responds.</p>',st:'Starting…'}
+];
+var ul=$('steps');
+STEPS.forEach(function(s){var li=document.createElement('li');li.textContent=s.n;ul.appendChild(li)});
+var lis=ul.children;
+var idx=0,busy=false,dead=false,auto=false,ver=0,deployed={v:'1.0',m:'Initial release'};
+function sleep(ms){return new Promise(function(r){setTimeout(r,auto?ms:Math.min(ms,350))})}
+function log(txt,c){var s=document.createElement('span');if(c)s.className=c;s.textContent=txt+'\n';term.appendChild(s);term.scrollTop=term.scrollHeight}
+function paint(i,state){
+ var s=STEPS[i];
+ [].forEach.call(nodes,function(n){n.classList.remove('on','link')});
+ if(state==='on'){nodes[s.a].classList.add('on');if(s.b!=null){nodes[s.a].classList.add('link');nodes[s.b].classList.add('on')}}
+}
+function finish(i,ok){
+ var s=STEPS[i];
+ [].forEach.call(nodes,function(n){n.classList.remove('on','link')});
+ var tgt=s.b!=null?s.b:s.a;
+ if(ok){nodes[s.a].classList.add('done');nodes[s.a].querySelector('.st').textContent='✓ Done';
+  if(s.b!=null){nodes[s.a].classList.add('linkdone');nodes[s.b].classList.add('done');nodes[s.b].querySelector('.st').textContent='✓ Done'}
+  lis[i].className='done'}
+ else{nodes[tgt].classList.add('fail');nodes[tgt].querySelector('.st').textContent='✗ Failed';lis[i].className='fail'}
+}
+async function exec(i){
+ var m=$('msg').value.trim()||'Update code',f=$('fail').checked;
+ var s=STEPS[i];
+ lis[i].className='on';paint(i,'on');
+ nodes[s.b!=null?s.b:s.a].querySelector('.st').textContent=s.st;
+ ex.innerHTML='<h2 style="font-size:15px;margin:0 0 6px">'+s.t+'</h2>'+s.d;
+ if(i===0){ver++;log('$ git add .','c');log('$ git commit -m "'+m+'"','c');await sleep(700);log('[main '+Math.random().toString(16).slice(2,9)+'] '+m,'g');log(' 3 files changed, 42 insertions(+)','d')}
+ if(i===1){log('$ git push origin main','c');await sleep(500);log('Enumerating objects: 9, done.','d');await sleep(400);log('To github.com:redhut/my-app.git','d');log('   a1b2c3d..e4f5a6b  main -> main','g')}
+ if(i===2){log('GitHub → POST /github-webhook/ (push event)','c');await sleep(600);log('Jenkins: build #'+(ver+41)+' started by GitHub push','g')}
+ if(i===3){
+  var st=['git clone github.com/redhut/my-app','npm install','npm run build'];
+  for(var k=0;k<st.length;k++){log('$ '+st[k],'c');await sleep(450)}
+  log('$ npm test','c');await sleep(700);
+  if(f){log('FAIL  src/app.test.js','e');log('  ✕ homepage renders (12 ms)','e');log('Tests: 1 failed, 5 passed','e');log('Pipeline aborted. Nothing was deployed.','e');finish(i,false);return false}
+  log('Tests: 6 passed, 6 total','g')}
+ if(i===4){log('$ docker build -t redhut/my-app:1.'+ver+' .','c');await sleep(700);log('Step 4/6 : COPY . /app','d');log('Successfully built 9f3c2a1b7d4e','g');log('$ docker push redhut/my-app:1.'+ver,'c');await sleep(600);log('1.'+ver+': digest: sha256:7c1e… size: 1573','g')}
+ if(i===5){log('$ ssh ec2-user@54.210.0.12','c');await sleep(500);log('$ docker pull redhut/my-app:1.'+ver,'c');await sleep(600);log('Status: Downloaded newer image for redhut/my-app:1.'+ver,'g')}
+ if(i===6){log('$ docker stop myapp && docker rm myapp','c');await sleep(400);log('$ docker run -d --name myapp -p 80:3000 redhut/my-app:1.'+ver,'c');await sleep(600);log('$ curl -f localhost/health','c');log('200 OK','g');
+  deployed={v:'1.'+ver,m:m};
+  $('sv').textContent='My App v'+deployed.v;$('sm').textContent=m;$('smeta').textContent='Container: myapp:'+deployed.v+' · 1 running';$('stag').textContent='Just deployed'}
+ await sleep(500);finish(i,true);return true;
+}
+async function step(){
+ if(busy||dead||idx>=STEPS.length)return false;
+ busy=true;
+ var ok=await exec(idx);
+ if(!ok){dead=true;ex.innerHTML='<h2 style="font-size:15px;margin:0 0 6px;color:var(--bad)">Pipeline stopped</h2><p>The tests failed in Jenkins, so no image was built and EC2 is still serving the previous version. Fix the code, untick the box, then reset and run again.</p>'}
+ else idx++;
+ if(idx>=STEPS.length&&ok){ex.innerHTML='<h2 style="font-size:15px;margin:0 0 6px;color:var(--ok)">Deployed 🎉</h2><p>Your change went from commit to production without anyone touching the server. Reset to ship another change.</p>'}
+ busy=false;sync();return ok;
+}
+function sync(){var end=dead||idx>=STEPS.length;$('run').disabled=busy||end;$('next').disabled=busy||end;$('msg').disabled=busy||(idx>0&&!end)}
+$('run').onclick=async function(){auto=true;while(!dead&&idx<STEPS.length){var ok=await step();if(!ok)break;await sleep(700)}auto=false};
+$('next').onclick=function(){auto=false;step()};
+$('reset').onclick=function(){if(busy)return;idx=0;dead=false;term.textContent='';
+ [].forEach.call(nodes,function(n){n.className='node';n.querySelector('.st').textContent=''});
+ [].forEach.call(lis,function(l){l.className=''});
+ ex.innerHTML='<p>Press <b>Run pipeline</b> to play everything, or <b>Next step</b> to go one stage at a time.</p>';sync()};
+sync();
+})();
 </script>
 </body>
 </html>
